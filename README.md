@@ -1,36 +1,51 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# LensFX — WebGL Video Filters
 
-## Getting Started
+A Next.js component that captures live webcam video and applies real-time filters using WebGL fragment shaders.
 
-First, run the development server:
+## How it works
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+Each video frame is uploaded to the GPU as a WebGL texture via `texImage2D`. A GLSL fragment shader runs per-pixel on every frame, applying the selected filter entirely on the GPU. All 7 shader programs are compiled once on mount and cached — switching filters is just a program swap with no recompile.
+
+## Filters
+
+| Filter    | Effect                          |
+| --------- | ------------------------------- |
+| Normal    | Passthrough                     |
+| Grayscale | Luminance-weighted desaturation |
+| Sepia     | Classic warm brown tone         |
+| Invert    | Inverts all RGB channels        |
+| Vignette  | Darkens edges toward center     |
+| Cold      | Boosts blue, reduces red        |
+| Warm      | Boosts red, reduces blue        |
+
+## Setup
+
+Drop `VideoFilter.tsx` into your Next.js app:
+
+```tsx
+// app/page.tsx
+import VideoFilter from "@/components/VideoFilter";
+
+export default function Page() {
+  return <VideoFilter />;
+}
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Optionally add `DM Mono` to your `layout.tsx` for the full look:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```tsx
+import { DM_Mono } from "next/font/google";
+const dmMono = DM_Mono({ subsets: ["latin"], weight: ["300", "400"] });
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Requirements
 
-## Learn More
+- Next.js 13+ (App Router)
+- Browser with WebGL and `getUserMedia` support
+- Camera permission
 
-To learn more about Next.js, take a look at the following resources:
+## Stack
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Next.js + React + TypeScript
+- WebGL (raw, no Three.js)
+- GLSL fragment shaders
