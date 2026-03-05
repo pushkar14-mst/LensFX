@@ -47,5 +47,5 @@ const dmMono = DM_Mono({ subsets: ["latin"], weight: ["300", "400"] });
 ## Stack
 
 - Next.js + React + TypeScript
-- WebGL (raw, no Three.js)
+- WebGL
 - GLSL fragment shaders
